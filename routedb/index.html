@@ -27,7 +27,7 @@
 
     <div class="stickyFooter ">
         <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark ">
-            <a class="navbar-brand " href="# ">路線データベース</a>
+            <a class="navbar-brand " href="#">路線データベース</a>
             <button class="navbar-toggler " type="button " data-toggle="collapse " data-target="#navbarCollapse " aria-controls="navbarCollapse " aria-expanded="false " aria-label="Toggle navigation ">
           <span class="navbar-toggler-icon "></span>
         </button>
@@ -73,7 +73,7 @@
                     function(pref) {
                         var out = '';
                         for (var idx in pref) {
-                            out += '<a href="# " class="list-group-item list-group-item-action" onclick="getLine(\'' + pref[idx].pref_cd + '\')"><strong>' + pref[idx].pref_name + '（' + pref[idx].pref_name_k + '）</strong></a>'
+                            out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + pref[idx].pref_cd + '\')"><strong>' + pref[idx].pref_name + '（' + pref[idx].pref_name_k + '）</strong></a>'
                         }
                         $("#list ").html(out);
                     },
@@ -84,7 +84,7 @@
         });
 
         function getLine(key_pref_cd) {
-            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary");
+            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
             $("#hidPrefElement").val(parentElement);
             $.ajax({
                     type: 'GET',
@@ -96,7 +96,7 @@
                     function(line) {
                         var out = parentElement;
                         for (var idx in line) {
-                            out += '<a href="# " class="list-group-item list-group-item-action" onclick="getStation(\'' + line[idx].key_pref_line_cd + '\')">' + line[idx].line_name + '（' + line[idx].line_name_k + '）</a>'
+                            out += '<a href="# " class="list-group-item list-group-item-action" onclick="getStation(\'' + line[idx].key_pref_line_cd + '\')"><strong>' + line[idx].line_name + '（' + line[idx].line_name_k + '）</strong></a>'
                         }
                         $("#list ").html(out);
                     },
@@ -119,7 +119,7 @@
                     function(station) {
                         var out = $("#hidPrefElement").val() + parentElement;
                         for (var idx in station) {
-                            out += '<a href="# " class="list-group-item list-group-item-action" onclick="getLocal(\'' + station[idx].key_pref_line_station_cd + '\')">' + station[idx].station_name + '（' + station[idx].station_name_k + '）</a>'
+                            out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLocal(\'' + station[idx].key_pref_line_station_cd + '\')"><strong>' + station[idx].station_name + '（' + station[idx].station_name_k + '）</strong></a>'
                         }
                         $("#list ").html(out);
                     },
