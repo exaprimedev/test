@@ -62,37 +62,44 @@
     <!-- Optional JavaScript -->
     <script>
         const url = 'https://script.google.com/macros/s/AKfycbxiafn31yxtBvrwT_Nfd-mO8c8oLIuQVDpTxu1wEoD1HrN5g5o/exec'
+
         $(function() {
             $.getJSON("data/master.json", function(master) {
-                $.each(master.prefs, function(index, value) {
-
-                    console.log(index + ': ' + value);
-
-                })
+                var out = "";
+                for (var key in master.prefs) {
+                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + key + '\')"><strong>' + master.prefs[key].pref_name + '（' + master.prefs[key].pref_name_k + '）</strong></a>';
+                }
+                $("#list ").html(out);
             });
         });
 
-        function getLine(key_pref_cd) {
+        function getLine(pref_cd) {
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
             $("#hidPrefElement").val(parentElement);
-            $.ajax({
-                    type: 'GET',
-                    url: url + '?sn=line&q=' + key_pref_cd,
-                    dataType: 'jsonp',
-                    jsonpCallback: 'jsondata'
-                })
-                .then(
-                    function(line) {
-                        var out = parentElement;
-                        for (var idx in line) {
-                            out += '<a href="# " class="list-group-item list-group-item-action" onclick="getStation(\'' + line[idx].key_pref_line_cd + '\')"><strong>' + line[idx].line_name + '（' + line[idx].line_name_k + '）</strong></a>'
-                        }
-                        $("#list ").html(out);
-                    },
-                    function() {
-                        console.log('error：sn=line');
-                    }
-                );
+
+            var result = $.grep(master.stations, function(e) {
+                return e["pref_cd"] == pref_cd;
+            });
+            console.log(result);
+
+            //            $.ajax({
+            //                    type: 'GET',
+            //                    url: url + '?sn=line&q=' + key_pref_cd,
+            //                    dataType: 'jsonp',
+            //                    jsonpCallback: 'jsondata'
+            //                })
+            //                .then(
+            //                    function(line) {
+            //                        var out = parentElement;
+            //                        for (var idx in line) {
+            //                            out += '<a href="# " class="list-group-item list-group-item-action" onclick="getStation(\'' + line[idx].key_pref_line_cd + '\')"><strong>' + line[idx].line_name + '（' + line[idx].line_name_k + '）</strong></a>'
+            //                        }
+            //                        $("#list ").html(out);
+            //                    },
+            //                    function() {
+            //                        console.log('error：sn=line');
+            //                    }
+            //                );
         }
 
         function getStation(key_pref_line_cd) {
