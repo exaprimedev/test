@@ -63,24 +63,11 @@
     <script>
         const url = 'https://script.google.com/macros/s/AKfycbxiafn31yxtBvrwT_Nfd-mO8c8oLIuQVDpTxu1wEoD1HrN5g5o/exec'
         $(function() {
-            $.ajax({
-                    type: 'GET',
-                    url: url + '?sn=pref',
-                    dataType: 'jsonp',
-                    jsonpCallback: 'jsondata'
-                })
-                .then(
-                    function(pref) {
-                        var out = '';
-                        for (var idx in pref) {
-                            out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + pref[idx].pref_cd + '\')"><strong>' + pref[idx].pref_name + '（' + pref[idx].pref_name_k + '）</strong></a>'
-                        }
-                        $("#list ").html(out);
-                    },
-                    function() {
-                        console.log('error：sn=pref');
-                    }
-                );
+            $.getJSON("data/master.json", function(master) {
+                for (var i in master) {
+
+                }
+            });
         });
 
         function getLine(key_pref_cd) {
