@@ -76,9 +76,10 @@
         function getLine(pref_cd) {
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
             $("#hidPrefElement").val(parentElement);
-
-            var result = $.grep(master.stations, function(e) {
-                return e["pref_cd"] == pref_cd;
+            $.getJSON("data/master.json", function(master) {
+                var result = $.grep(master.stations, function(e) {
+                    return e["pref_cd"] == pref_cd;
+                });
             });
             console.log(result);
 
