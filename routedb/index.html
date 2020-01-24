@@ -64,9 +64,11 @@
         const url = 'https://script.google.com/macros/s/AKfycbxiafn31yxtBvrwT_Nfd-mO8c8oLIuQVDpTxu1wEoD1HrN5g5o/exec'
         $(function() {
             $.getJSON("data/master.json", function(master) {
-                for (var i in master) {
+                $.each(master.prefs, function(index, value) {
 
-                }
+                    console.log(index + ': ' + value);
+
+                })
             });
         });
 
