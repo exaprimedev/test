@@ -64,10 +64,10 @@
         const url = 'https://script.google.com/macros/s/AKfycbxiafn31yxtBvrwT_Nfd-mO8c8oLIuQVDpTxu1wEoD1HrN5g5o/exec'
 
         $(function() {
-            $.getJSON("data/master.json", function(master) {
+            $.getJSON("data/prefs.json", function(prefs) {
                 var out = "";
-                for (var key in master.prefs) {
-                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + key + '\')"><strong>' + master.prefs[key].pref_name + '（' + master.prefs[key].pref_name_k + '）</strong></a>';
+                for (var key in prefs) {
+                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + prefs[key].pref_cd + '\')"><strong>' + prefs[key].pref_name + '（' + prefs[key].pref_name_k + '）</strong></a>';
                 }
                 $("#list ").html(out);
             });
@@ -76,54 +76,43 @@
         function getLine(pref_cd) {
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
             $("#hidPrefElement").val(parentElement);
-            $.getJSON("data/master.json", function(master) {
-                var result = $.grep(master.stations, function(e) {
-                    return e["pref_cd"] == pref_cd;
+            $.getJSON("data/stations.json", function(stations) {
+                var out = parentElement;
+                var prefStations = $.grep(stations, function(obj) {
+                    return obj.pref_cd == pref_cd;
+                });
+                console.log(prefStations);
+                var uniqueLines = $.unique(prefStations.map(function(obj) {
+                    return obj.line_cd;
+                }));
+                console.log(uniqueLines);
+                $.getJSON("data/lines.json", function(lines) {
+                    $.each(uniqueLines, function(idx, line_cd) {
+                        var prefLine = $.grep(lines, function(obj) {
+                            return obj.line_cd == line_cd;
+                        });
+                        console.log(prefLine);
+                        out += '<a href="# " class="list-group-item list-group-item-action" onclick="getStation(\'' + prefLine[0].line_cd + '\')"><strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong></a>'
+                    });
+                    $("#list").html(out);
                 });
             });
-            console.log(result);
-
-            //            $.ajax({
-            //                    type: 'GET',
-            //                    url: url + '?sn=line&q=' + key_pref_cd,
-            //                    dataType: 'jsonp',
-            //                    jsonpCallback: 'jsondata'
-            //                })
-            //                .then(
-            //                    function(line) {
-            //                        var out = parentElement;
-            //                        for (var idx in line) {
-            //                            out += '<a href="# " class="list-group-item list-group-item-action" onclick="getStation(\'' + line[idx].key_pref_line_cd + '\')"><strong>' + line[idx].line_name + '（' + line[idx].line_name_k + '）</strong></a>'
-            //                        }
-            //                        $("#list ").html(out);
-            //                    },
-            //                    function() {
-            //                        console.log('error：sn=line');
-            //                    }
-            //                );
         }
 
-        function getStation(key_pref_line_cd) {
-            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-info");
+        function getStation(line_cd) {
+            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action  list-group-item-info active");
             $("#hidLineElement").val(parentElement);
-            $.ajax({
-                    type: 'GET',
-                    url: url + '?sn=station&q=' + key_pref_line_cd,
-                    dataType: 'jsonp',
-                    jsonpCallback: 'jsondata'
-                })
-                .then(
-                    function(station) {
-                        var out = $("#hidPrefElement").val() + parentElement;
-                        for (var idx in station) {
-                            out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLocal(\'' + station[idx].key_pref_line_station_cd + '\')"><strong>' + station[idx].station_name + '（' + station[idx].station_name_k + '）</strong></a>'
-                        }
-                        $("#list ").html(out);
-                    },
-                    function() {
-                        console.log('error：sn=station');
-                    }
-                );
+            $.getJSON("data/stations.json", function(stations) {
+                var lineStations = $.grep(stations, function(obj) {
+                    return obj.line_cd == line_cd;
+                });
+                console.log(lineStations);
+                var out = $("#hidPrefElement").val() + parentElement;
+                for (var idx in lineStations) {
+                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLocal(\'' + lineStations[idx].station_cd + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong></a>'
+                }
+                $("#list ").html(out);
+            });
         }
 
         function getLocal(key_pref_line_cd) {}
