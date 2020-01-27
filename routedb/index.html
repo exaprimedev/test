@@ -34,16 +34,16 @@
             <div class="collapse navbar-collapse " id="navbarCollapse ">
                 <ul class="navbar-nav mr-auto ">
                     <li class="nav-item ">
-                        <a class="nav-link " href="# ">路線データベースについて</a>
+                        <a class="nav-link " href="# ">About</a>
                     </li>
                     <li class="nav-item ">
-                        <a class="nav-link " href="# ">利用規約</a>
+                        <a class="nav-link " href="# ">Terms of use</a>
                     </li>
                     <li class="nav-item ">
-                        <a class="nav-link " href="# ">プライバシーポリシー</a>
+                        <a class="nav-link " href="# ">Privacy Policy</a>
                     </li>
                     <li class="nav-item ">
-                        <a class="nav-link " href="# ">お問い合わせ</a>
+                        <a class="nav-link " href="# ">Contact</a>
                     </li>
                     <li class="nav-item ">
                         <a class="nav-link " href="# ">Follow @routedb</a>
@@ -62,6 +62,7 @@
     <!-- Optional JavaScript -->
     <script>
         const url = 'https://script.google.com/macros/s/AKfycbxiafn31yxtBvrwT_Nfd-mO8c8oLIuQVDpTxu1wEoD1HrN5g5o/exec'
+        const transfer_icon = '※'
 
         $(function() {
             $.getJSON("data/prefs.json", function(prefs) {
@@ -92,7 +93,7 @@
                             return obj.line_cd == line_cd;
                         });
                         console.log(prefLine);
-                        out += '<a href="# " class="list-group-item list-group-item-action" onclick="getStation(\'' + prefLine[0].line_cd + '\')"><strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong></a>'
+                        out += '<a href="#" class="list-group-item list-group-item-action" onclick="getStation(\'' + prefLine[0].line_cd + '\')"><strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong></a>'
                     });
                     $("#list").html(out);
                 });
@@ -109,7 +110,15 @@
                 console.log(lineStations);
                 var out = $("#hidPrefElement").val() + parentElement;
                 for (var idx in lineStations) {
-                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLocal(\'' + lineStations[idx].station_cd + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong></a>'
+                    var gStations = $.grep(stations, function(obj) {
+                        return obj.station_g_cd == lineStations[idx].station_cd;
+                    });
+                    console.log(gStations);
+                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLocal(\'' + lineStations[idx].station_cd + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
+                    if (gStations.length > 1) {
+                        out += transfer_icon;
+                    }
+                    out += '</a>'
                 }
                 $("#list ").html(out);
             });
