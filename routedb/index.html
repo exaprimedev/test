@@ -22,31 +22,32 @@
             </div>
         </div>
     </nav>
+
     <div class="list-group" id="list" style="padding-top:50px;padding-bottom:60px;">
     </div>
 
-    <div class="stickyFooter ">
-        <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark ">
-            <a class="navbar-brand " href="#" onclick="location.reload();">路線データベース</a>
-            <button class="navbar-toggler " type="button " data-toggle="collapse " data-target="#navbarCollapse " aria-controls="navbarCollapse " aria-expanded="false " aria-label="Toggle navigation ">
-          <span class="navbar-toggler-icon "></span>
+    <div class="stickyFooter">
+        <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
+            <a class="navbar-brand" href="#" onclick="location.reload();">Route DB</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
         </button>
-            <div class="collapse navbar-collapse " id="navbarCollapse ">
-                <ul class="navbar-nav mr-auto ">
-                    <li class="nav-item ">
-                        <a class="nav-link " href="# ">About</a>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link " href="# ">Terms of use</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Terms of use</a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link " href="# ">Privacy Policy</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Privacy Policy</a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link " href="# ">Contact</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link " href="# ">Follow @routedb</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Follow @routedb</a>
                     </li>
                 </ul>
             </div>
@@ -55,10 +56,11 @@
     <input type="hidden" id="hidPrefElement">
     <input type="hidden" id="hidLineElement">
     <input type="hidden" id="hidStationElement">
+    <input type="hidden" id="hidTransferLines">
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js " integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin=" anonymous "></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js " integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo " crossorigin="anonymous "></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js " integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6 " crossorigin="anonymous "></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin=" anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <!-- Optional JavaScript -->
     <script>
         const url = 'https://script.google.com/macros/s/AKfycbxiafn31yxtBvrwT_Nfd-mO8c8oLIuQVDpTxu1wEoD1HrN5g5o/exec'
@@ -70,7 +72,7 @@
                 for (var key in prefs) {
                     out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + prefs[key].pref_cd + '\')"><strong>' + prefs[key].pref_name + '（' + prefs[key].pref_name_k + '）</strong></a>';
                 }
-                $("#list ").html(out);
+                $("#list").html(out);
             });
         });
 
@@ -82,18 +84,18 @@
                 var prefStations = $.grep(stations, function(obj) {
                     return obj.pref_cd == pref_cd;
                 });
-                console.log(prefStations);
+                // console.log(prefStations);
                 var uniqueLines = $.unique(prefStations.map(function(obj) {
                     return obj.line_cd;
                 }));
-                console.log(uniqueLines);
+                // console.log(uniqueLines);
                 $.getJSON("data/lines.json", function(lines) {
                     $.each(uniqueLines, function(idx, line_cd) {
                         var prefLine = $.grep(lines, function(obj) {
                             return obj.line_cd == line_cd;
                         });
-                        console.log(prefLine);
-                        out += '<a href="#" class="list-group-item list-group-item-action" onclick="getStation(\'' + prefLine[0].line_cd + '\')"><strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong></a>'
+                        // console.log(prefLine);
+                        out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:50px;" onclick="getStation(\'' + prefLine[0].line_cd + '\')"><strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong></a>'
                     });
                     $("#list").html(out);
                 });
@@ -107,24 +109,49 @@
                 var lineStations = $.grep(stations, function(obj) {
                     return obj.line_cd == line_cd;
                 });
-                console.log(lineStations);
+                // console.log(lineStations);
                 var out = $("#hidPrefElement").val() + parentElement;
                 for (var idx in lineStations) {
-                    var gStations = $.grep(stations, function(obj) {
-                        return obj.station_g_cd == lineStations[idx].station_cd;
+                    var tmpStations = $.grep(stations, function(obj) {
+                        return obj.station_cd == lineStations[idx].station_cd;
                     });
-                    console.log(gStations);
-                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLocal(\'' + lineStations[idx].station_cd + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
+                    //console.log(tmpStations);
+                    var gStations = $.grep(stations, function(obj) {
+                        return obj.station_g_cd == tmpStations[0].station_g_cd;
+                    });
+                    var transferLines = $.unique(gStations.map(function(obj) {
+                        return obj.line_cd;
+                    }));
+                    // console.log(transferLines.toString());
+                    $("#hidTransferLines").val(transferLines.toString());
+                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString() + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
                         out += transfer_icon;
                     }
                     out += '</a>'
                 }
-                $("#list ").html(out);
+                $("#list").html(out);
             });
         }
 
-        function getLocal(key_pref_line_cd) {}
+        function getLocal(station_cd, line_cd, transferLines) {
+            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
+            $("#hidStationElement").val(parentElement);
+            var out = $("#hidPrefElement").val() + $("#hidLineElement").val() + parentElement;
+            var arrTransferLines = transferLines.split(",");
+            if (arrTransferLines.length > 1) {
+                $.getJSON("data/lines.json", function(lines) {
+                    for (var idx in arrTransferLines) {
+                        var transferLine = $.grep(lines, function(obj) {
+                            return obj.line_cd == arrTransferLines[idx];
+                        });
+                        // console.log(transferLine);
+                        out += '<a href="#" class="list-group-item list-group-item-action list-group-item-info" style="padding-left:50px;" onclick="getStation(\'' + transferLine[0].line_cd + '\')"><strong>' + transferLine[0].line_name + '（' + transferLine[0].line_name_k + '）</strong></a>'
+                    }
+                    $("#list").html(out);
+                });
+            }
+        }
     </script>
 </body>
 
