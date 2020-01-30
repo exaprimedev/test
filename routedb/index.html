@@ -15,15 +15,46 @@
 <body>
     <nav class="navbar navbar-light fixed-top bg-light">
         <div class="input-group">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary" type="button" onclick="location.reload();">TOP</button>
+            </div>
             <input type="text" class="form-control" aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
             <div class="input-group-append" id="button-addon4">
                 <button class="btn btn-outline-secondary" type="button">検索</button>
-                <button class="btn btn-outline-secondary" type="button" onclick="location.reload();">TOP</button>
             </div>
         </div>
     </nav>
 
     <div class="list-group" id="list" style="padding-top:50px;padding-bottom:60px;">
+    </div>
+    <div class="modal fade" id="dataForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <form>
+                        <input type="hidden" id="hidPrefCd">
+                        <input type="hidden" id="hidLineCd">
+                        <input type="hidden" id="hidStationCd">
+                        <input type="hidden" id="hidPrefElement">
+                        <input type="hidden" id="hidLineElement">
+                        <input type="hidden" id="hidStationElement">
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">なまえ:</label>
+                            <input type="text" class="form-control" id="data-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">タグ:</label>
+                            <input type="text" class="form-control" id="data-tag">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">登録</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="stickyFooter">
@@ -53,9 +84,6 @@
             </div>
         </nav>
     </div>
-    <input type="hidden" id="hidPrefElement">
-    <input type="hidden" id="hidLineElement">
-    <input type="hidden" id="hidStationElement">
     <input type="hidden" id="hidTransferLines">
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin=" anonymous"></script>
@@ -79,6 +107,7 @@
         function getLine(pref_cd) {
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
             $("#hidPrefElement").val(parentElement);
+            $("#hidPrefCd").val(pref_cd);
             $.getJSON("data/stations.json", function(stations) {
                 var out = parentElement;
                 var prefStations = $.grep(stations, function(obj) {
@@ -105,6 +134,7 @@
         function getStation(line_cd) {
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action  list-group-item-info active");
             $("#hidLineElement").val(parentElement);
+            $("#hidLineCd").val(line_cd);
             $.getJSON("data/stations.json", function(stations) {
                 var lineStations = $.grep(stations, function(obj) {
                     return obj.line_cd == line_cd;
@@ -137,9 +167,12 @@
         function getLocal(station_cd, line_cd, transferLines) {
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
+            $("#hidStationCd").val(station_cd);
             var out = $("#hidPrefElement").val() + $("#hidLineElement").val() + parentElement;
-            var arrTransferLines = transferLines.split(",");
-            if (arrTransferLines.length > 1) {
+            var arrTransferLines = $.grep(transferLines.split(","), function(value, idx) {
+                return value != line_cd;
+            });
+            if (arrTransferLines.length > 0) {
                 $.getJSON("data/lines.json", function(lines) {
                     for (var idx in arrTransferLines) {
                         var transferLine = $.grep(lines, function(obj) {
@@ -148,8 +181,12 @@
                         // console.log(transferLine);
                         out += '<a href="#" class="list-group-item list-group-item-action list-group-item-info" style="padding-left:50px;" onclick="getStation(\'' + transferLine[0].line_cd + '\')"><strong>' + transferLine[0].line_name + '（' + transferLine[0].line_name_k + '）</strong></a>'
                     }
+                    out += '<a href="#" class="list-group-item list-group-item-action list-group-item-danger" data-toggle="modal" data-target="#dataForm" style="text-align:center;">✙<strong>追加</strong></a>'
                     $("#list").html(out);
                 });
+            } else {
+                out += '<a href="#" class="list-group-item list-group-item-action list-group-item-danger" data-toggle="modal" data-target="#dataForm" style="text-align:center;">✙<strong>追加</strong></a>'
+                $("#list").html(out);
             }
         }
     </script>
