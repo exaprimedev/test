@@ -30,28 +30,27 @@
     <div class="modal fade" id="dataForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-
                 <div class="modal-body">
-                    <form>
+                    <form id="addForm" role="form">
+                        <input type="hidden" id="hidUuid">
                         <input type="hidden" id="hidPrefCd">
                         <input type="hidden" id="hidLineCd">
                         <input type="hidden" id="hidStationCd">
                         <input type="hidden" id="hidPrefElement">
                         <input type="hidden" id="hidLineElement">
                         <input type="hidden" id="hidStationElement">
+                        <input type="hidden" id="hidTransferLines">
                         <div class="form-group">
                             <label for="recipient-name" class="col-form-label">なまえ:</label>
-                            <input type="text" class="form-control" id="data-name">
+                            <input type="text" class="form-control" id="data_name">
                         </div>
                         <div class="form-group">
                             <label for="message-text" class="col-form-label">タグ:</label>
-                            <input type="text" class="form-control" id="data-tag">
+                            <input type="text" class="form-control" id="data_tag">
                         </div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">登録</button>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                    <button type="submit" class="btn btn-primary">登録</button>
                 </div>
             </div>
         </div>
@@ -84,14 +83,15 @@
             </div>
         </nav>
     </div>
-    <input type="hidden" id="hidTransferLines">
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin=" anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
     <!-- Optional JavaScript -->
     <script>
-        const url = 'https://script.google.com/macros/s/AKfycbxiafn31yxtBvrwT_Nfd-mO8c8oLIuQVDpTxu1wEoD1HrN5g5o/exec'
+        const addFormUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSewCzPNrhuFBtvFVkD7szNCRLlQNhCOqyXftJ4OBxd9oo7bzQ/formResponse'
+        const dataUrl = 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec';
         const transfer_icon = '※'
 
         $(function() {
@@ -101,6 +101,44 @@
                     out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + prefs[key].pref_cd + '\')"><strong>' + prefs[key].pref_name + '（' + prefs[key].pref_name_k + '）</strong></a>';
                 }
                 $("#list").html(out);
+            });
+            $("#addForm").submit(function(event) {
+                var hidUuid = new Date().getTime().toString(16);
+                var hidPrefCd = $("#hidPrefCd").val();
+                var hidLineCd = $("#hidLineCd").val();
+                var hidStationCd = $("#hidStationCd").val();
+                var hidPrefElement = $("#hidPrefElement").val();
+                var hidLineElement = $("#hidLineElement").val();
+                var hidStationElement = $("#hidStationElement").val();
+                var hidTransferLines = $("#hidTransferLines").val();
+                var data_name = $("#data_name").val();
+                var data_tag = $("#data_tag").val();
+                $.ajax({
+                    url: addFormUrl,
+                    data: {
+                        "entry.1664878280": hidUuid,
+                        "entry.330967881": hidPrefCd,
+                        "entry.530825915": hidLineCd,
+                        "entry.193652865": hidStationCd,
+                        "entry.2082251296": hidPrefElement,
+                        "entry.1659786519": hidLineElement,
+                        "entry.743628637": hidStationElement,
+                        "entry.1165159767": hidTransferLines,
+                        "entry.1471533980": data_name,
+                        "entry.1349980811": data_tag
+                    },
+                    type: "POST",
+                    dataType: "xml",
+                    statusCode: {
+                        0: function() {
+                            alert("追加しました。")
+                        },
+                        200: function() {
+                            alert("errorMsg")
+                        }
+                    }
+                })
+                event.preventDefault();
             });
         });
 
@@ -165,6 +203,7 @@
         }
 
         function getLocal(station_cd, line_cd, transferLines) {
+            $.LoadingOverlay("show");
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
             $("#hidStationCd").val(station_cd);
@@ -172,22 +211,41 @@
             var arrTransferLines = $.grep(transferLines.split(","), function(value, idx) {
                 return value != line_cd;
             });
-            if (arrTransferLines.length > 0) {
-                $.getJSON("data/lines.json", function(lines) {
-                    for (var idx in arrTransferLines) {
-                        var transferLine = $.grep(lines, function(obj) {
-                            return obj.line_cd == arrTransferLines[idx];
-                        });
-                        // console.log(transferLine);
-                        out += '<a href="#" class="list-group-item list-group-item-action list-group-item-info" style="padding-left:50px;" onclick="getStation(\'' + transferLine[0].line_cd + '\')"><strong>' + transferLine[0].line_name + '（' + transferLine[0].line_name_k + '）</strong></a>'
-                    }
-                    out += '<a href="#" class="list-group-item list-group-item-action list-group-item-danger" data-toggle="modal" data-target="#dataForm" style="text-align:center;">✙<strong>追加</strong></a>'
-                    $("#list").html(out);
-                });
-            } else {
-                out += '<a href="#" class="list-group-item list-group-item-action list-group-item-danger" data-toggle="modal" data-target="#dataForm" style="text-align:center;">✙<strong>追加</strong></a>'
-                $("#list").html(out);
-            }
+            $.getJSON("data/lines.json", function(lines) {
+                for (var idx in arrTransferLines) {
+                    var transferLine = $.grep(lines, function(obj) {
+                        return obj.line_cd == arrTransferLines[idx];
+                    });
+                    // console.log(transferLine);
+                    out += '<a href="#" class="list-group-item list-group-item-action list-group-item-info" style="padding-left:50px;" onclick="getStation(\'' + transferLine[0].line_cd + '\')"><strong>' + transferLine[0].line_name + '（' + transferLine[0].line_name_k + '）</strong></a>'
+                }
+                $.ajax({
+                        type: 'GET',
+                        url: dataUrl + '?sn=local&q=' + station_cd,
+                        dataType: 'jsonp',
+                        jsonpCallback: 'jsondata'
+                    })
+                    .then(
+                        function(local) {
+                            for (var idx in local) {
+                                out += '<a href="#" class="list-group-item list-group-item-action" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
+                                var tags = local[idx].tag.split("#");
+                                for (var idx2 in tags) {
+                                    out += '<span class="badge badge-success">'
+                                    out += tags[idx2]
+                                    out += '</span>'
+                                }
+                                out += '</a>'
+                            }
+                            out += '<a href="#" class="list-group-item list-group-item-action list-group-item-danger" data-toggle="modal" data-target="#dataForm" style="text-align:center;">✙<strong>追加</strong></a>'
+                            $("#list").html(out);
+                            $.LoadingOverlay("hide");
+                        },
+                        function() {
+                            console.log('error');
+                        }
+                    );
+            });
         }
     </script>
 </body>
