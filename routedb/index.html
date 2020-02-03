@@ -39,7 +39,6 @@
                         <input type="hidden" id="hidPrefElement">
                         <input type="hidden" id="hidLineElement">
                         <input type="hidden" id="hidStationElement">
-                        <input type="hidden" id="hidTransferLines">
                         <div class="form-group">
                             <label for="recipient-name" class="col-form-label">なまえ:</label>
                             <input type="text" class="form-control" id="data_name">
@@ -110,7 +109,6 @@
                 var hidPrefElement = $("#hidPrefElement").val();
                 var hidLineElement = $("#hidLineElement").val();
                 var hidStationElement = $("#hidStationElement").val();
-                var hidTransferLines = $("#hidTransferLines").val();
                 var data_name = $("#data_name").val();
                 var data_tag = $("#data_tag").val();
                 $.ajax({
@@ -123,7 +121,6 @@
                         "entry.2082251296": hidPrefElement,
                         "entry.1659786519": hidLineElement,
                         "entry.743628637": hidStationElement,
-                        "entry.1165159767": hidTransferLines,
                         "entry.1471533980": data_name,
                         "entry.1349980811": data_tag
                     },
@@ -190,9 +187,11 @@
                     var transferLines = $.unique(gStations.map(function(obj) {
                         return obj.line_cd;
                     }));
+                    var transferStations = $.unique(gStations.map(function(obj) {
+                        return obj.station_cd;
+                    }));
                     // console.log(transferLines.toString());
-                    $("#hidTransferLines").val(transferLines.toString());
-                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString() + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
+                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString() + '\',\'' + transferStations.toString() + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
                         out += transfer_icon;
                     }
@@ -202,11 +201,11 @@
             });
         }
 
-        function getLocal(station_cd, line_cd, transferLines) {
+        function getLocal(station_cd, line_cd, transferLines, transferStations) {
             $.LoadingOverlay("show");
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
-            $("#hidStationCd").val(station_cd);
+            $("#hidStationCd").val(station_cd + "," + transferStations);
             var out = $("#hidPrefElement").val() + $("#hidLineElement").val() + parentElement;
             var arrTransferLines = $.grep(transferLines.split(","), function(value, idx) {
                 return value != line_cd;
