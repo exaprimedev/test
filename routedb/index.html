@@ -228,7 +228,7 @@
                         function(local) {
                             for (var idx in local) {
                                 var tags = local[idx].tag.split("#");
-                                out += '<a href="https://www.google.com/search?q=' + tags[1] + '+' + local[idx].name + '" class="list-group-item list-group-item-action" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
+                                out += '<a href="https://www.google.com/search?q=' + tags[1] + '+' + local[idx].name + '" class="list-group-item list-group-item-action" target="_blank" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
                                 for (var idx2 in tags) {
                                     out += '<span class="badge badge-success">'
                                     out += tags[idx2]
