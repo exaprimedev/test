@@ -97,10 +97,43 @@
             $.getJSON("data/prefs.json", function(prefs) {
                 var out = "";
                 for (var key in prefs) {
-                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + prefs[key].pref_cd + '\')"><strong>' + prefs[key].pref_name + '（' + prefs[key].pref_name_k + '）</strong></a>';
+                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + prefs[key].pref_cd + '\')">'
+                    out += '<strong>' + prefs[key].pref_name + '（' + prefs[key].pref_name_k + '）</strong>'
+                    out += '<span class="badge badge-pill badge-light" id="badge_pref' + prefs[key].pref_cd + '"></span></a>';
                 }
                 $("#list").html(out);
             });
+            $.ajax({
+                    type: 'GET',
+                    url: dataUrl + '?sn=local',
+                    dataType: 'jsonp',
+                    jsonpCallback: 'jsondata'
+                })
+                .then(
+                    function(local) {
+                        var groupByPref = local.reduce(function(result, current) {
+                            var element = result.find(function(p) {
+                                return p.hidPrefCd === current.hidPrefCd
+                            });
+                            if (element) {
+                                element.count++;
+                            } else {
+                                result.push({
+                                    hidPrefCd: current.hidPrefCd,
+                                    count: 1
+                                });
+                            }
+                            return result;
+                        }, []);
+                        console.log(groupByPref)
+                        for (var idx in groupByPref) {
+                            $("#badge_pref" + groupByPref[idx].hidPrefCd).html(groupByPref[idx].count)
+                        }
+                    },
+                    function() {
+                        console.log('error');
+                    }
+                );
             $("#addForm").submit(function(event) {
                 var hidUuid = new Date().getTime().toString(16);
                 var hidPrefCd = $("#hidPrefCd").val();
@@ -159,10 +192,43 @@
                             return obj.line_cd == line_cd;
                         });
                         // console.log(prefLine);
-                        out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:50px;" onclick="getStation(\'' + prefLine[0].line_cd + '\')"><strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong></a>'
+                        out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:50px;" onclick="getStation(\'' + prefLine[0].line_cd + '\')">'
+                        out += '<strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong>'
+                        out += '<span class="badge badge-pill badge-light" id="badge_line' + line_cd + '"></span></a>';
                     });
                     $("#list").html(out);
                 });
+                $.ajax({
+                        type: 'GET',
+                        url: dataUrl + '?sn=local',
+                        dataType: 'jsonp',
+                        jsonpCallback: 'jsondata'
+                    })
+                    .then(
+                        function(local) {
+                            var groupByLine = local.reduce(function(result, current) {
+                                var element = result.find(function(p) {
+                                    return p.hidLineCd === current.hidLineCd
+                                });
+                                if (element) {
+                                    element.count++;
+                                } else {
+                                    result.push({
+                                        hidLineCd: current.hidLineCd,
+                                        count: 1
+                                    });
+                                }
+                                return result;
+                            }, []);
+                            console.log(groupByLine)
+                            for (var idx in groupByLine) {
+                                $("#badge_line" + groupByLine[idx].hidLineCd).html(groupByLine[idx].count)
+                            }
+                        },
+                        function() {
+                            console.log('error');
+                        }
+                    );
             });
         }
 
