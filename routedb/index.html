@@ -191,7 +191,7 @@
                         return obj.station_cd;
                     }));
                     // console.log(transferLines.toString());
-                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString() + '\',\'' + transferStations.toString() + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
+                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
                         out += transfer_icon;
                     }
@@ -205,9 +205,9 @@
             $.LoadingOverlay("show");
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
-            $("#hidStationCd").val(station_cd + "," + transferStations);
+            $("#hidStationCd").val(station_cd + "_" + transferStations);
             var out = $("#hidPrefElement").val() + $("#hidLineElement").val() + parentElement;
-            var arrTransferLines = $.grep(transferLines.split(","), function(value, idx) {
+            var arrTransferLines = $.grep(transferLines.split("_"), function(value, idx) {
                 return value != line_cd;
             });
             $.getJSON("data/lines.json", function(lines) {
@@ -227,8 +227,8 @@
                     .then(
                         function(local) {
                             for (var idx in local) {
-                                out += '<a href="#" class="list-group-item list-group-item-action" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
                                 var tags = local[idx].tag.split("#");
+                                out += '<a href="https://www.google.com/search?q=' + tags[1] + '+' + local[idx].name + '" class="list-group-item list-group-item-action" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
                                 for (var idx2 in tags) {
                                     out += '<span class="badge badge-success">'
                                     out += tags[idx2]
