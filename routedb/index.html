@@ -125,7 +125,6 @@
                             }
                             return result;
                         }, []);
-                        console.log(groupByPref)
                         for (var idx in groupByPref) {
                             $("#badge_pref" + groupByPref[idx].hidPrefCd).html(groupByPref[idx].count)
                         }
@@ -220,7 +219,6 @@
                                 }
                                 return result;
                             }, []);
-                            console.log(groupByLine)
                             for (var idx in groupByLine) {
                                 $("#badge_line" + groupByLine[idx].hidLineCd).html(groupByLine[idx].count)
                             }
@@ -257,14 +255,51 @@
                         return obj.station_cd;
                     }));
                     // console.log(transferLines.toString());
-                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')"><strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
+                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
+                    out += '<strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
                         out += transfer_icon;
                     }
-                    out += '</a>'
+                    out += '<span class="badge badge-pill badge-light" id="badge_station' + lineStations[idx].station_cd + '"></span></a>';
                 }
                 $("#list").html(out);
             });
+            $.ajax({
+                    type: 'GET',
+                    url: dataUrl + '?sn=local&q=' + line_cd,
+                    dataType: 'jsonp',
+                    jsonpCallback: 'jsondata'
+                })
+                .then(
+                    function(local) {
+                        var groupByStation = local.reduce(function(result, current) {
+                            var element = result.find(function(p) {
+                                return p.hidStationCd === current.hidStationCd
+                            });
+                            if (element) {
+                                element.count++;
+                            } else {
+                                result.push({
+                                    hidStationCd: current.hidStationCd,
+                                    count: 1
+                                });
+                            }
+                            return result;
+                        }, []);
+                        console.log(groupByStation);
+                        for (var idx in groupByStation) {
+                            console.log(groupByStation[idx]);
+                            var stations = groupByStation[idx].hidStationCd.split("_");
+                            for (var idx2 in stations) {
+                                console.log(stations[idx2]);
+                                $("#badge_station" + stations[idx2]).html(groupByStation[idx].count)
+                            }
+                        }
+                    },
+                    function() {
+                        console.log('error');
+                    }
+                );
         }
 
         function getLocal(station_cd, line_cd, transferLines, transferStations) {
