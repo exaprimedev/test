@@ -161,6 +161,8 @@
                     statusCode: {
                         0: function() {
                             alert("追加しました。")
+                            $("#data_tag").html("");
+                            $("#data_name").html("");
                         },
                         200: function() {
                             alert("errorMsg")
