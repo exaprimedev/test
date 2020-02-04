@@ -160,8 +160,6 @@
                     dataType: "xml",
                     statusCode: {
                         0: function() {
-                            $("#data_tag").html("");
-                            $("#data_name").html("");
                             alert("追加しました。")
                         },
                         200: function() {
@@ -305,6 +303,8 @@
         }
 
         function getLocal(station_cd, line_cd, transferLines, transferStations) {
+            $("#data_tag").val("");
+            $("#data_name").val("");
             $.LoadingOverlay("show");
             var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
