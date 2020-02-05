@@ -18,9 +18,9 @@
             <div class="input-group-prepend">
                 <button class="btn btn-outline-secondary" type="button" onclick="location.reload();">TOP</button>
             </div>
-            <input type="text" class="form-control" aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
+            <input type="text" class="form-control" id="keyword" aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
             <div class="input-group-append" id="button-addon4">
-                <button class="btn btn-outline-secondary" type="button">検索</button>
+                <button class="btn btn-outline-secondary" type="button" onclick="findLocal()">検索</button>
             </div>
         </div>
     </nav>
@@ -67,7 +67,7 @@
         <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
             <a class="navbar-brand" href="javascript:void(0);" onclick="location.reload();">Route DB</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
@@ -359,6 +359,40 @@
                         }
                     );
             });
+        }
+
+        function findLocal() {
+            var keyword = $("#keyword").val();
+            $.ajax({
+                    type: 'GET',
+                    url: dataUrl + '?sn=local&q=' + keyword,
+                    dataType: 'jsonp',
+                    jsonpCallback: 'jsondata'
+                })
+                .then(
+                    function(local) {
+                        var out = "";
+                        for (var idx in local) {
+                            out += local[idx].hidPrefElement;
+                            out += local[idx].hidLineElement;
+                            out += local[idx].hidStationElement;
+                            var tags = local[idx].tag.split("#");
+                            out += '<a href="https://www.google.com/search?q=' + tags[1] + '+' + local[idx].name + '" class="list-group-item list-group-item-action" target="_blank" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
+                            for (var idx2 in tags) {
+                                out += '<span class="badge badge-success">'
+                                out += tags[idx2]
+                                out += '</span>'
+                            }
+                            out += '</a>'
+                        }
+                        out += '<a href="javascript:void(0);" class="list-group-item list-group-item-action list-group-item-danger" data-toggle="modal" data-target="#dataForm" style="text-align:center;">✙<strong>追加</strong></a>'
+                        $("#list").html(out);
+                        $.LoadingOverlay("hide");
+                    },
+                    function() {
+                        console.log('error');
+                    }
+                );
         }
     </script>
 </body>
