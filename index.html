@@ -393,6 +393,24 @@
         </div>
     </div>
 
+    <div id="partner" class="about-area area-padding">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="section-headline text-center">
+                    <h2>パートナー企業</h2>
+                </div>
+            </div>
+        </div>
+        <div id="businessInfo" style="margin-left:15%">
+            <table width="800px" height="200px">
+                <tr>
+                    <td><H5>株式会社オリオグローバル</H5></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
     <div id="business" class="about-area area-padding">
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -493,23 +511,81 @@ PMO業務経験者も募集しています。
             </table>
         </div>
     </div>
+    <!-- Start contact Area -->
+    <div id="contact" class="contact-area">
+        <div class="contact-inner area-padding">
+            <div class="contact-overly"></div>
+            <div class="container ">
 
-    <div id="partner" class="about-area area-padding">
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="section-headline text-center">
-                    <h2>パートナー企業</h2>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="section-headline text-center">
+                            <h2>お問い合わせ</h2>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="row" style="margin-left:25%">
+                    <!-- Start contact icon column -->
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <div class="contact-icon text-center">
+                            <div class="single-icon">
+                                <i class="fa fa-mobile"></i>
+                                <p>
+                                    TEL: 03-3356-2550<br>
+                                    <span>FAX: 03-3356-2550</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Start contact icon column -->
+                    <div class="col-md-6 col-sm-4 col-xs-12">
+                        <div class="contact-icon text-center">
+                            <div class="single-icon">
+                                <i class="fa fa-envelope-o"></i>
+                                <p>
+                                    Email: info@exaprime.co.jp<br>
+                                    <span>Web: http://exaprime.co.jp</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Start contact icon column -->
+
+                <!-- Start contact -->
+                <div class="col-md-6 col-sm-6 col-xs-14" style="margin-left:25%">
+                    <div class="form contact-form">
+                        <div id="sendmessage">送信が完了しました</div>
+                        <div id="errormessage">送信に失敗しました</div>
+                        <form action="mailto:exaprime.dev@gmail.com" method="post" role="form" class="contactForm">
+                            <div class="form-group">
+                                お名前<input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" OnChange="WriteMail(this.form)"/>
+                                <div class="validation"></div>
+                            </div>
+                            <div class="form-group">
+                                あなたのメールアドレス<input type="email" class="form-control" name="from" id="from" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" OnChange="WriteMail(this.form)"/>
+                                <div class="validation"></div>
+                            </div>
+                            <div class="form-group">
+                                件名　※採用に関するお問い合わせの場合、件名に【採用】を記入ください<input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" OnChange="WriteMail(this.form)"/>
+                                <div class="validation"></div>
+                            </div>
+                            <div class="form-group">
+                                本文<textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message" OnChange="WriteMail(this.form)"></textarea>
+                                <div class="validation"></div>
+                            </div>
+                            <div class="text-center"><button type="submit">メール送信</button></div>
+                        </form>
+                    </div>
+                </div>
+                <!-- End contact -->
+
             </div>
         </div>
-        <div id="businessInfo" style="margin-left:15%">
-            <table width="800px" height="200px">
-                <tr>
-                    <td><H5>株式会社オリオグローバル</H5></td>
-                </tr>
-            </table>
-        </div>
     </div>
+    <!-- End Contact Area -->
+
 
     <div id="access" class="about-area area-padding">
         <div class="row">
@@ -550,78 +626,6 @@ PMO業務経験者も募集しています。
         </div>
     </div>
 
-    <!-- Start contact Area -->
-    <div id="contact" class="contact-area">
-        <div class="contact-inner area-padding">
-            <div class="contact-overly"></div>
-            <div class="container ">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="section-headline text-center">
-                            <h2>お問い合わせ</h2>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-left:25%">
-                    <!-- Start contact icon column -->
-                    <div class="col-md-4 col-sm-4 col-xs-12">
-                        <div class="contact-icon text-center">
-                            <div class="single-icon">
-                                <i class="fa fa-mobile"></i>
-                                <p>
-                                    TEL: 03-3356-2550<br>
-                                    <span>FAX: 03-3356-2550</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Start contact icon column -->
-                    <div class="col-md-4 col-sm-4 col-xs-12">
-                        <div class="contact-icon text-center">
-                            <div class="single-icon">
-                                <i class="fa fa-envelope-o"></i>
-                                <p>
-                                    Email: info@exaprime.co.jp<br>
-                                    <span>Web: http://exaprime.co.jp</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Start contact icon column -->
-
-                <!-- Start contact -->
-                <div class="col-md-6 col-sm-6 col-xs-12" style="margin-left:25%">
-                    <div class="form contact-form">
-                        <div id="sendmessage">Your message has been sent. Thank you!</div>
-                        <div id="errormessage"></div>
-                        <form action="" method="post" role="form" class="contactForm">
-                            <div class="form-group">
-                                <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
-                                <div class="validation"></div>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" />
-                                <div class="validation"></div>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" />
-                                <div class="validation"></div>
-                            </div>
-                            <div class="form-group">
-                                <textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"></textarea>
-                                <div class="validation"></div>
-                            </div>
-                            <div class="text-center"><button type="submit">Send Message</button></div>
-                        </form>
-                    </div>
-                </div>
-                <!-- End contact -->
-
-            </div>
-        </div>
-    </div>
-    <!-- End Contact Area -->
 
     <!-- Start Footer bottom Area -->
     <footer>
@@ -640,7 +644,6 @@ PMO業務経験者も募集しています。
                                 <p><a class="page-scroll" href="#recruit">採用情報</a></p>
                                 <p><a class="page-scroll" href="#partner">パートナー企業</a></p>
                                 <p><a class="page-scroll" href="#access">アクセス</a></p>
-                                <p><a class="page-scroll" href="#contact">お問い合わせ</a></p>
 <!--
                                 <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
                                 <div class="footer-icons">
@@ -756,6 +759,9 @@ PMO業務経験者も募集しています。
         xmlHttpRequestJson.responseType = "json";
         xmlHttpRequestJson.send(null);
     </script>
+
+
+
     <!-- JavaScript Libraries -->
     <script src="lib/jquery/jquery.min.js"></script>
     <script src="lib/bootstrap/js/bootstrap.min.js"></script>
