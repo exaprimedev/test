@@ -105,7 +105,7 @@
             });
             $.ajax({
                     type: 'GET',
-                    url: 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec' + '?sn=local',
+                    url: dataUrl + '?sn=local',
                     dataType: 'jsonp',
                     jsonpCallback: 'jsondata'
                 })
@@ -199,7 +199,7 @@
                 });
                 $.ajax({
                         type: 'GET',
-                        url: 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec' + '?sn=local',
+                        url: dataUrl + '?sn=local',
                         dataType: 'jsonp',
                         jsonpCallback: 'jsondata'
                     })
@@ -266,7 +266,7 @@
             });
             $.ajax({
                     type: 'GET',
-                    url: 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec' + '?sn=local&q=' + line_cd,
+                    url: dataUrl + '?sn=local&q=' + line_cd,
                     dataType: 'jsonp',
                     jsonpCallback: 'jsondata'
                 })
@@ -321,7 +321,7 @@
                 }
                 $.ajax({
                         type: 'GET',
-                        url: 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec' + '?sn=local&q=' + station_cd,
+                        url: dataUrl + '?sn=local&q=' + station_cd,
                         dataType: 'jsonp',
                         jsonpCallback: 'jsondata'
                     })
