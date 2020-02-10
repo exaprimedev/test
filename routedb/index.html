@@ -191,9 +191,9 @@
                             return obj.line_cd == line_cd;
                         });
                         // console.log(prefLine);
-                        out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:50px;" onclick="getStation(\'' + prefLine[0].line_cd + '\')">'
+                        out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:50px;" id="lineElement' + prefLine[0].line_cd + '" onclick="getStation(\'' + prefLine[0].line_cd + '\')">'
                         out += '<strong>' + prefLine[0].line_name + '（' + prefLine[0].line_name_k + '）</strong>'
-                        out += '<span class="badge badge-pill badge-light" id="badge_line' + line_cd + '"></span></a>';
+                        out += '<span class="badge badge-pill badge-light" name="badge_line" id="badge_line' + line_cd + '"></span></a>';
                     });
                     $("#list").html(out);
                 });
@@ -205,22 +205,32 @@
                     })
                     .then(
                         function(local) {
-                            var groupByLine = local.reduce(function(result, current) {
+                            var groupByStation = local.reduce(function(result, current) {
                                 var element = result.find(function(p) {
-                                    return p.hidLineCd === current.hidLineCd
+                                    return p.hidStationCd === current.hidStationCd
                                 });
                                 if (element) {
                                     element.count++;
                                 } else {
                                     result.push({
-                                        hidLineCd: current.hidLineCd,
+                                        hidStationCd: current.hidStationCd,
                                         count: 1
                                     });
                                 }
                                 return result;
                             }, []);
-                            for (var idx in groupByLine) {
-                                $("#badge_line" + groupByLine[idx].hidLineCd).html(groupByLine[idx].count)
+                            console.log(groupByStation);
+                            for (var i in $('[name="badge_line"]')) {
+                                var subtotalLine = 0;
+                                var line_cd = $('[name="badge_line"]')[i].id.replace("badge_line", "");
+                                for (var idx in groupByStation) {
+                                    if (groupByStation[idx].hidStationCd.indexOf(line_cd) != -1) {
+                                        subtotalLine += groupByStation[idx].count;
+                                    }
+                                }
+                                if (subtotalLine > 0) {
+                                    $("#badge_line" + line_cd).html(subtotalLine)
+                                }
                             }
                         },
                         function() {
@@ -231,7 +241,7 @@
         }
 
         function getStation(line_cd) {
-            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action  list-group-item-info active");
+            var parentElement = $("#lineElement" + line_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action  list-group-item-info active");
             $("#hidLineElement").val(parentElement);
             $("#hidLineCd").val(line_cd);
             $.getJSON("data/stations.json", function(stations) {
@@ -255,7 +265,7 @@
                         return obj.station_cd;
                     }));
                     // console.log(transferLines.toString());
-                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
+                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" id="stationElement' + lineStations[idx].station_cd + '" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
                     out += '<strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
                         out += transfer_icon;
@@ -304,7 +314,7 @@
 
         function getLocal(station_cd, line_cd, transferLines, transferStations) {
             $.LoadingOverlay("show");
-            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
+            var parentElement = $("#stationElement" + station_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
             $("#hidStationCd").val(station_cd + "_" + transferStations);
             var out = $("#hidPrefElement").val() + $("#hidLineElement").val() + parentElement;
