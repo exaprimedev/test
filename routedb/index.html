@@ -89,15 +89,15 @@
     <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
     <!-- Optional JavaScript -->
     <script>
-        // const addFormUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSewCzPNrhuFBtvFVkD7szNCRLlQNhCOqyXftJ4OBxd9oo7bzQ/formResponse'
-        // let dataUrl = 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec';
-        // const transfer_icon = '※'
+        const addFormUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSewCzPNrhuFBtvFVkD7szNCRLlQNhCOqyXftJ4OBxd9oo7bzQ/formResponse'
+        const dataUrl = 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec';
+        const transfer_icon = '※'
 
         $(function() {
             $.getJSON("data/prefs.json", function(prefs) {
                 var out = "";
                 for (var key in prefs) {
-                    out += '<a href="#" class="list-group-item list-group-item-action" onclick="getLine(\'' + prefs[key].pref_cd + '\')">'
+                    out += '<a href="#" class="list-group-item list-group-item-action" id="prefElement' + prefs[key].pref_cd + '" onclick="getLine(\'' + prefs[key].pref_cd + '\')">'
                     out += '<strong>' + prefs[key].pref_name + '（' + prefs[key].pref_name_k + '）</strong>'
                     out += '<span class="badge badge-pill badge-light" id="badge_pref' + prefs[key].pref_cd + '"></span></a>';
                 }
@@ -144,7 +144,7 @@
                 var data_name = $("#data_name").val();
                 var data_tag = $("#data_tag").val();
                 $.ajax({
-                    url: 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSewCzPNrhuFBtvFVkD7szNCRLlQNhCOqyXftJ4OBxd9oo7bzQ/formResponse',
+                    url: addFormUrl,
                     data: {
                         "entry.1664878280": hidUuid,
                         "entry.330967881": hidPrefCd,
@@ -172,7 +172,7 @@
         });
 
         function getLine(pref_cd) {
-            var parentElement = this.document.activeElement.outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
+            var parentElement = $("#prefElement" + pref_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
             $("#hidPrefElement").val(parentElement);
             $("#hidPrefCd").val(pref_cd);
             $.getJSON("data/stations.json", function(stations) {
