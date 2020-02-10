@@ -89,9 +89,9 @@
     <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
     <!-- Optional JavaScript -->
     <script>
-        const addFormUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSewCzPNrhuFBtvFVkD7szNCRLlQNhCOqyXftJ4OBxd9oo7bzQ/formResponse'
-            // let dataUrl = 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec';
-        const transfer_icon = '※'
+        // const addFormUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSewCzPNrhuFBtvFVkD7szNCRLlQNhCOqyXftJ4OBxd9oo7bzQ/formResponse'
+        // let dataUrl = 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec';
+        // const transfer_icon = '※'
 
         $(function() {
             $.getJSON("data/prefs.json", function(prefs) {
@@ -144,7 +144,7 @@
                 var data_name = $("#data_name").val();
                 var data_tag = $("#data_tag").val();
                 $.ajax({
-                    url: addFormUrl,
+                    url: 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSewCzPNrhuFBtvFVkD7szNCRLlQNhCOqyXftJ4OBxd9oo7bzQ/formResponse',
                     data: {
                         "entry.1664878280": hidUuid,
                         "entry.330967881": hidPrefCd,
