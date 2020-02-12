@@ -317,7 +317,7 @@
             var parentElement = $("#stationElement" + station_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
             $("#hidStationCd").val(station_cd + "_" + transferStations);
-            var out = $("#hidPrefElement").val() + $("#hidLineElement").val() + parentElement;
+            var out = $("#hidPrefElement").val() + $("#hidLineElement").val();
             var arrTransferLines = $.grep(transferLines.split("_"), function(value, idx) {
                 return value != line_cd;
             });
@@ -327,7 +327,7 @@
                         return obj.line_cd == arrTransferLines[idx];
                     });
                     // console.log(transferLine);
-                    out += '<a href="#" class="list-group-item list-group-item-action list-group-item-info" style="padding-left:50px;" onclick="getStation(\'' + transferLine[0].line_cd + '\')"><strong>' + transferLine[0].line_name + '（' + transferLine[0].line_name_k + '）</strong></a>'
+                    out += '<a href="#" class="list-group-item list-group-item-action list-group-item-info" style="padding-left:50px;" id="lineElement' + transferLine[0].line_cd + '" onclick="getStation(\'' + transferLine[0].line_cd + '\')"><strong>' + transferLine[0].line_name + '（' + transferLine[0].line_name_k + '）</strong></a>'
                 }
                 $.ajax({
                         type: 'GET',
@@ -337,6 +337,7 @@
                     })
                     .then(
                         function(local) {
+                            out += parentElement;
                             for (var idx in local) {
                                 var tags = local[idx].tag.split("#");
                                 out += '<a href="https://www.google.com/search?q=' + tags[1] + '+' + local[idx].name + '" class="list-group-item list-group-item-action" target="_blank" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
