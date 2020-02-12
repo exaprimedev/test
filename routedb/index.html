@@ -36,9 +36,13 @@
                         <input type="hidden" id="hidPrefCd">
                         <input type="hidden" id="hidLineCd">
                         <input type="hidden" id="hidStationCd">
+                        <input type="hidden" id="hidActiveStationCd">
+                        <input type="hidden" id="hidStationName">
                         <input type="hidden" id="hidPrefElement">
                         <input type="hidden" id="hidLineElement">
                         <input type="hidden" id="hidStationElement">
+                        <input type="hidden" id="hidTransferLines">
+                        <input type="hidden" id="hidTransferStations">
                         <div class="form-group">
                             <label for="recipient-name" class="col-form-label">なまえ:</label>
                             <input type="text" class="form-control" id="data_name">
@@ -54,7 +58,7 @@
                 <div class="modal-body" id="modal_msg" style="display: none;">
                     <p>登録しました。</p>
                     <div class="text-right">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModalMsg()">閉じる</button>
                     </div>
                 </div>
             </div>
@@ -328,6 +332,10 @@
             var parentElement = $("#stationElement" + station_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
             $("#hidStationCd").val(station_cd + "_" + transferStations);
+            $("#hidActiveStationCd").val(station_cd);
+            $("#hidStationName").val(station_name);
+            $("#hidTransferLines").val(transferLines);
+            $("#hidTransferStations").val(transferStations);
             var out = $("#hidPrefElement").val() + $("#hidLineElement").val();
             var arrTransferLines = $.grep(transferLines.split("_"), function(value, idx) {
                 return value != line_cd;
@@ -368,6 +376,10 @@
                         }
                     );
             });
+        }
+
+        function closeModalMsg() {
+            getLocal($("#hidActiveStationCd").val(), $("#hidStationName").val(), $("#hidLineCd").val(), $("#hidTransferLines").val(), $("#hidTransferStations").val());
         }
     </script>
 </body>
