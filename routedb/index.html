@@ -30,7 +30,7 @@
     <div class="modal fade" id="dataForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-body">
+                <div class="modal-body" id="modal_form">
                     <form id="addForm" role="form">
                         <input type="hidden" id="hidUuid">
                         <input type="hidden" id="hidPrefCd">
@@ -51,6 +51,12 @@
                         <button type="submit" class="btn btn-primary">登録</button>
                     </form>
                 </div>
+                <div class="modal-body" id="modal_msg" style="display: none;">
+                    <p>登録しました。</p>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -59,7 +65,7 @@
         <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
             <a class="navbar-brand" href="#" onclick="location.reload();">Route DB</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
@@ -160,7 +166,8 @@
                     dataType: "xml",
                     statusCode: {
                         0: function() {
-                            alert("追加しました。")
+                            $("#modal_form").hide();
+                            $("#modal_msg").show();
                         },
                         200: function() {
                             alert("errorMsg")
@@ -265,7 +272,7 @@
                         return obj.station_cd;
                     }));
                     // console.log(transferLines.toString());
-                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" id="stationElement' + lineStations[idx].station_cd + '" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
+                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" id="stationElement' + lineStations[idx].station_cd + '" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + lineStations[idx].station_name + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
                     out += '<strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
                         out += transfer_icon;
@@ -312,7 +319,11 @@
                 );
         }
 
-        function getLocal(station_cd, line_cd, transferLines, transferStations) {
+        function getLocal(station_cd, station_name, line_cd, transferLines, transferStations) {
+            $("#modal_form").show();
+            $("#modal_msg").hide();
+            $("#data_tag").val("");
+            $("#data_name").val("");
             $.LoadingOverlay("show");
             var parentElement = $("#stationElement" + station_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
@@ -340,7 +351,7 @@
                             out += parentElement;
                             for (var idx in local) {
                                 var tags = local[idx].tag.split("#");
-                                out += '<a href="https://www.google.com/search?q=' + tags[1] + '+' + local[idx].name + '" class="list-group-item list-group-item-action" target="_blank" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
+                                out += '<a href="https://www.google.com/search?q=' + station_name + '+' + tags[1] + '+' + local[idx].name + '" class="list-group-item list-group-item-action" target="_blank" style="text-align:center;"><strong>' + local[idx].name + '</strong>';
                                 for (var idx2 in tags) {
                                     out += '<span class="badge badge-success">'
                                     out += tags[idx2]
