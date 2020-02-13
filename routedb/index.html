@@ -18,9 +18,14 @@
             <div class="input-group-prepend">
                 <button class="btn btn-outline-secondary" type="button" onclick="location.reload();">TOP</button>
             </div>
+            <div class="input-group-prepend">
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">タグ</button>
+                <div class="dropdown-menu p-4 text-muted overflow-auto" style="height: 150px;" id="uniqueTagsList">
+                </div>
+            </div>
             <input type="text" id="keyword" class="form-control" aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
             <div class="input-group-append" id="button-addon4">
-                <button class="btn btn-outline-secondary" type="button" onclick="findLocal()">検索</button>
+                <button class="btn btn-outline-secondary" type="button" onclick="findLocal('')">検索</button>
             </div>
         </div>
     </nav>
@@ -138,6 +143,19 @@
                         for (var idx in groupByPref) {
                             $("#badge_pref" + groupByPref[idx].hidPrefCd).html(groupByPref[idx].count)
                         }
+                        var tagsAll = "";
+                        for (var idx in local) {
+                            tagsAll += local[idx].tag;
+                        }
+                        var uniqueTagsList = tagsAll.split("#").filter(function(x, i, self) {
+                            return self.indexOf(x) === i;
+                        });
+                        uniqueTagsList.sort();
+                        var out = "";
+                        for (var idx in uniqueTagsList) {
+                            out += '<a href="#" class="badge badge-success" style="font-size: 100%;" onclick="findLocal(\'' + uniqueTagsList[idx] + '\')">' + uniqueTagsList[idx] + '</a>';
+                        }
+                        $("#uniqueTagsList").html(out);
                     },
                     function() {
                         console.log('error');
@@ -378,9 +396,11 @@
             });
         }
 
-        function findLocal() {
+        function findLocal(keyword) {
             $.LoadingOverlay("show");
-            var keyword = $("#keyword").val();
+            if (keyword === "") {
+                keyword = $("#keyword").val();
+            }
             $.ajax({
                     type: 'GET',
                     url: dataUrl + '?sn=local&q=' + keyword,
