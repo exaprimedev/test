@@ -409,7 +409,7 @@
                 })
                 .then(
                     function(local) {
-                        var out = "";
+                        var out = '<a href="#" class="list-group-item list-group-item-action list-group-item-warning" data-toggle="modal" data-target="#dataForm" style="text-align:center;"><strong>「' + keyword + '」' + local.length + '件</strong></a>';
                         for (var idx in local) {
                             out += local[idx].hidPrefElement;
                             out += local[idx].hidLineElement;
