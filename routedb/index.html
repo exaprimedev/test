@@ -111,10 +111,14 @@
         const dataUrl = 'https://script.google.com/macros/s/AKfycbzEteOUIgurAfRtzsTM9QWq0ZFf7wPJYZQOEtXmCDuRdv1uhkM/exec';
         const transfer_icon = '※'
 
+        // ローディング
         $(function() {
+            // 現在地取得
             getMyPlace();
+            // 都道府県マスタ取得
             $.getJSON("data/prefs.json", function(prefs) {
                 var out = "";
+                // 都道府県一覧作成
                 for (var key in prefs) {
                     out += '<a href="#" class="list-group-item list-group-item-action" id="prefElement' + prefs[key].pref_cd + '" onclick="getLine(\'' + prefs[key].pref_cd + '\')">'
                     out += '<strong>' + prefs[key].pref_name + '（' + prefs[key].pref_name_k + '）</strong>'
@@ -122,6 +126,7 @@
                 }
                 $("#list").html(out);
             });
+            // ローカルデータ取得
             $.ajax({
                     type: 'GET',
                     url: dataUrl + '?sn=local',
@@ -130,6 +135,7 @@
                 })
                 .then(
                     function(local) {
+                        // 都道府県毎のデータ件数取得
                         var groupByPref = local.reduce(function(result, current) {
                             var element = result.find(function(p) {
                                 return p.hidPrefCd === current.hidPrefCd
@@ -144,17 +150,23 @@
                             }
                             return result;
                         }, []);
+                        // 件数バッジ描画
                         for (var idx in groupByPref) {
                             $("#badge_pref" + groupByPref[idx].hidPrefCd).html(groupByPref[idx].count)
                         }
+                        // タグクラウド作成開始
                         var tagsAll = "";
+                        // 全タグを連結
                         for (var idx in local) {
                             tagsAll += local[idx].tag;
                         }
+                        // 一意のタグ配列作成
                         var uniqueTagsList = tagsAll.split("#").filter(function(x, i, self) {
                             return self.indexOf(x) === i;
                         });
+                        // ソート
                         uniqueTagsList.sort();
+                        // タグクラウド作成
                         var out = "";
                         for (var idx in uniqueTagsList) {
                             out += '<a href="#" class="badge badge-success" style="font-size: 100%;" onclick="findLocal(\'' + uniqueTagsList[idx] + '\')">' + uniqueTagsList[idx] + '</a>';
@@ -165,7 +177,9 @@
                         console.log('error');
                     }
                 );
+            // 登録フォームイベント
             $("#addForm").submit(function(event) {
+                // hidden項目を取得
                 var hidUuid = new Date().getTime().toString(16);
                 var hidPrefCd = $("#hidPrefCd").val();
                 var hidLineCd = $("#hidLineCd").val();
@@ -175,6 +189,7 @@
                 var hidStationElement = $("#hidStationElement").val();
                 var data_name = $("#data_name").val();
                 var data_tag = $("#data_tag").val();
+                // googleフォームにPOST
                 $.ajax({
                     url: addFormUrl,
                     data: {
@@ -204,21 +219,28 @@
             });
         });
 
+        // 路線情報取得
         function getLine(pref_cd) {
+            // 親エレメント（都道府県）取得
             var parentElement = $("#prefElement" + pref_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
             $("#hidPrefElement").val(parentElement);
             $("#hidPrefCd").val(pref_cd);
+            // 駅マスタ取得
             $.getJSON("data/stations.json", function(stations) {
                 var out = parentElement;
+                // 都道府県で検索
                 var prefStations = $.grep(stations, function(obj) {
                     return obj.pref_cd == pref_cd;
                 });
                 // console.log(prefStations);
+                // 一意の路線一覧取得
                 var uniqueLines = $.unique(prefStations.map(function(obj) {
                     return obj.line_cd;
                 }));
                 // console.log(uniqueLines);
+                // 路線マスタ取得
                 $.getJSON("data/lines.json", function(lines) {
+                    // 路線一覧作成
                     $.each(uniqueLines, function(idx, line_cd) {
                         var prefLine = $.grep(lines, function(obj) {
                             return obj.line_cd == line_cd;
