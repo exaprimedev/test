@@ -219,7 +219,7 @@
             });
         });
 
-        // 路線情報取得
+        // 路線一覧作成
         function getLine(pref_cd) {
             // 親エレメント（都道府県）取得
             var parentElement = $("#prefElement" + pref_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-primary active");
@@ -252,7 +252,7 @@
                     });
                     $("#list").html(out);
                 });
-                // 件数バッジ描画
+                // ローカルデータ取得
                 $.ajax({
                         type: 'GET',
                         url: dataUrl + '?sn=local',
@@ -261,6 +261,7 @@
                     })
                     .then(
                         function(local) {
+                            // 駅コードでgroup by
                             var groupByStation = local.reduce(function(result, current) {
                                 var element = result.find(function(p) {
                                     return p.hidStationCd === current.hidStationCd
@@ -275,16 +276,19 @@
                                 }
                                 return result;
                             }, []);
-                            console.log(groupByStation);
+                            //console.log(groupByStation);
+                            // 路線要素をループ
                             for (var i in $('[name="badge_line"]')) {
                                 var subtotalLine = 0;
                                 var line_cd = $('[name="badge_line"]')[i].id.replace("badge_line", "");
                                 for (var idx in groupByStation) {
+                                    // 路線コードで部分一致する場合、加算
                                     if (groupByStation[idx].hidStationCd.indexOf(line_cd) != -1) {
                                         subtotalLine += groupByStation[idx].count;
                                     }
                                 }
                                 if (subtotalLine > 0) {
+                                    // 0件以外件数バッジ描画
                                     $("#badge_line" + line_cd).html(subtotalLine)
                                 }
                             }
@@ -296,10 +300,13 @@
             });
         }
 
+        // 駅一覧作成
         function getStation(line_cd) {
+            // 親エレメント（路線）取得
             var parentElement = $("#lineElement" + line_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action  list-group-item-info active");
             $("#hidLineElement").val(parentElement);
             $("#hidLineCd").val(line_cd);
+            // 駅マスタ取得
             $.getJSON("data/stations.json", function(stations) {
                 var lineStations = $.grep(stations, function(obj) {
                     return obj.line_cd == line_cd;
@@ -307,31 +314,40 @@
                 // console.log(lineStations);
                 var out = $("#hidPrefElement").val() + parentElement;
                 for (var idx in lineStations) {
+                    // カレントの駅コードで検索
                     var tmpStations = $.grep(stations, function(obj) {
                         return obj.station_cd == lineStations[idx].station_cd;
                     });
                     //console.log(tmpStations);
+                    // 接続駅取得のためグループ駅コードで検索
                     var gStations = $.grep(stations, function(obj) {
                         return obj.station_g_cd == tmpStations[0].station_g_cd;
                     });
+                    // 一意の乗換路線リスト作成
                     var transferLines = $.unique(gStations.map(function(obj) {
                         return obj.line_cd;
                     }));
+                    // 一意の乗換駅リスト作成
                     var transferStations = $.unique(gStations.map(function(obj) {
                         return obj.station_cd;
                     }));
                     // console.log(transferLines.toString());
+                    // 駅一覧作成
                     out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" id="stationElement' + lineStations[idx].station_cd + '" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + lineStations[idx].station_name + '\',\'' + lineStations[idx].lat + '\',\'' + lineStations[idx].lon + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
                     out += '<strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
+                        // 接続駅は※表示
                         out += transfer_icon;
                     }
                     out += '<span class="badge badge-pill badge-light" id="badge_station' + lineStations[idx].station_cd + '"></span></a>';
                 }
                 $("#list").html(out);
+                // マップ描画
                 drowMap(lineStations[0].lat, lineStations[0].lon);
+                // 路線レイヤー描画
                 drowPolyline(lineStations);
             });
+            // 路線コードでローカルデータ取得
             $.ajax({
                     type: 'GET',
                     url: dataUrl + '?sn=local&q=' + line_cd,
@@ -340,6 +356,7 @@
                 })
                 .then(
                     function(local) {
+                        // 駅コードでgroup by
                         var groupByStation = local.reduce(function(result, current) {
                             var element = result.find(function(p) {
                                 return p.hidStationCd === current.hidStationCd
@@ -354,12 +371,14 @@
                             }
                             return result;
                         }, []);
-                        console.log(groupByStation);
+                        // console.log(groupByStation);
                         for (var idx in groupByStation) {
-                            console.log(groupByStation[idx]);
+                            // console.log(groupByStation[idx]);
+                            // グループ駅コードから駅コードのリストを作成
                             var stations = groupByStation[idx].hidStationCd.split("_");
                             for (var idx2 in stations) {
-                                console.log(stations[idx2]);
+                                // console.log(stations[idx2]);
+                                // 件数バッジ描画
                                 $("#badge_station" + stations[idx2]).html(groupByStation[idx].count)
                             }
                         }
@@ -369,14 +388,18 @@
                     }
                 );
         }
-
+        // ローカル一覧作成
         function getLocal(station_cd, station_name, lat, lon, line_cd, transferLines, transferStations) {
+            // マップ描画
             drowMap(lat, lon);
+            // モーダルフォーム初期化
             $("#modal_form").show();
             $("#modal_msg").hide();
             $("#data_tag").val("");
             $("#data_name").val("");
+            // ローディングアニメーション開始
             $.LoadingOverlay("show");
+            // 親エレメント（駅）取得
             var parentElement = $("#stationElement" + station_cd)[0].outerHTML.replace("list-group-item-action", "list-group-item-action list-group-item-success active");
             $("#hidStationElement").val(parentElement);
             $("#hidStationCd").val(station_cd + "_" + transferStations);
@@ -468,7 +491,7 @@
 
         function getMyPlace() {
             if (!navigator.geolocation) { //Geolocation apiがサポートされていない場合
-                alert("<p>Geolocationはあなたのブラウザーでサポートされておりません</p>");
+                alert("<p>Geolocationはあなたの端末でサポートされておりません</p>");
                 return;
             }
 
@@ -484,6 +507,7 @@
             navigator.geolocation.getCurrentPosition(success, error); //成功と失敗を判断
         }
 
+        // Map描画
         function drowMap(latitude, longitude) {
             // 位置情報
             var latlng = new google.maps.LatLng(latitude, longitude);
@@ -499,6 +523,7 @@
             });
         }
 
+        // Polyline作成
         function drowPolyline(lineStations) {
 
             var latlng = new google.maps.LatLng(lineStations[0].lat, lineStations[0].lon);
