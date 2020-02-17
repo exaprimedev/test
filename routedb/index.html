@@ -31,7 +31,7 @@
     </nav>
 
     <!-- GoogleMap -->
-    <div id="map-canvas" style="width: 100%;height: 300px;background: #eee;"></div>
+    <div id="map-canvas" style="width: 100%;height: 400px;background: #eee;"></div>
     <div class="list-group" id="list" style="padding-bottom:60px;">
     </div>
     <div class="modal fade" id="dataForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -252,6 +252,7 @@
                     });
                     $("#list").html(out);
                 });
+                // 件数バッジ描画
                 $.ajax({
                         type: 'GET',
                         url: dataUrl + '?sn=local',
@@ -320,7 +321,7 @@
                         return obj.station_cd;
                     }));
                     // console.log(transferLines.toString());
-                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" id="stationElement' + lineStations[idx].station_cd + '" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + lineStations[idx].station_name + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
+                    out += '<a href="#" class="list-group-item list-group-item-action" style="padding-left:80px;" id="stationElement' + lineStations[idx].station_cd + '" onclick="getLocal(\'' + lineStations[idx].station_cd + '\',\'' + lineStations[idx].station_name + '\',\'' + lineStations[idx].lat + '\',\'' + lineStations[idx].lon + '\',\'' + line_cd + '\',\'' + transferLines.toString().replace(/,/g, '_') + '\',\'' + transferStations.toString().replace(/,/g, '_') + '\')">'
                     out += '<strong>' + lineStations[idx].station_name + '（' + lineStations[idx].station_name_k + '）</strong>'
                     if (gStations.length > 1) {
                         out += transfer_icon;
@@ -328,6 +329,8 @@
                     out += '<span class="badge badge-pill badge-light" id="badge_station' + lineStations[idx].station_cd + '"></span></a>';
                 }
                 $("#list").html(out);
+                drowMap(lineStations[0].lat, lineStations[0].lon);
+                drowPolyline(lineStations);
             });
             $.ajax({
                     type: 'GET',
@@ -367,7 +370,8 @@
                 );
         }
 
-        function getLocal(station_cd, station_name, line_cd, transferLines, transferStations) {
+        function getLocal(station_cd, station_name, lat, lon, line_cd, transferLines, transferStations) {
+            drowMap(lat, lon);
             $("#modal_form").show();
             $("#modal_msg").hide();
             $("#data_tag").val("");
@@ -484,7 +488,7 @@
             // 位置情報
             var latlng = new google.maps.LatLng(latitude, longitude);
             // Google Mapsに書き出し
-            var map = new google.maps.Map(document.getElementById('map-canvas'), {
+            var map = new google.maps.Map(document.getElementById("map-canvas"), {
                 zoom: 15, // ズーム値
                 center: latlng, // 中心座標
             });
@@ -493,6 +497,31 @@
                 map: map,
                 position: latlng,
             });
+        }
+
+        function drowPolyline(lineStations) {
+
+            var latlng = new google.maps.LatLng(lineStations[0].lat, lineStations[0].lon);
+            var opts = {
+                zoom: 10,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                center: latlng
+            };
+            var lat_lon = [];
+            for (var idx in lineStations) {
+                lat_lon.push(new google.maps.LatLng(lineStations[idx].lat, lineStations[idx].lon));
+            }
+            var map = new google.maps.Map(document.getElementById("map-canvas"), opts);
+            // Polylineの初期設定
+            var polylineOpts = {
+                map: map,
+                strokeColor: "#FF0000",
+                strokeOpacity: 1.0,
+                strokeWeight: 3,
+                path: lat_lon
+            };
+            // 直前で作成したPolylineOptionsを利用してPolylineを作成
+            var polyline = new google.maps.Polyline(polylineOpts);
         }
     </script>
 </body>
