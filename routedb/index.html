@@ -496,9 +496,9 @@
             }
 
             function success(position) {
-                var latitude = position.coords.latitude; //緯度
-                var longitude = position.coords.longitude; //経度
-                drowMap(latitude, longitude);
+                var lat = position.coords.latitude; //緯度
+                var lng = position.coords.longitude; //経度
+                drowMap(lat, lng);
             };
 
             function error() {
@@ -508,9 +508,9 @@
         }
 
         // Map描画
-        function drowMap(latitude, longitude) {
+        function drowMap(lat, lng) {
             // 位置情報
-            var latlng = new google.maps.LatLng(latitude, longitude);
+            var latlng = new google.maps.LatLng(lat, lng);
             // Google Mapsに書き出し
             var map = new google.maps.Map(document.getElementById("map-canvas"), {
                 zoom: 15, // ズーム値
@@ -532,9 +532,9 @@
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 center: latlng
             };
-            var lat_lon = [];
+            var lat_lng = [];
             for (var idx in lineStations) {
-                lat_lon.push(new google.maps.LatLng(lineStations[idx].lat, lineStations[idx].lon));
+                lat_lng.push(new google.maps.LatLng(lineStations[idx].lat, lineStations[idx].lon));
             }
             var map = new google.maps.Map(document.getElementById("map-canvas"), opts);
             // Polylineの初期設定
@@ -543,10 +543,46 @@
                 strokeColor: "#FF0000",
                 strokeOpacity: 1.0,
                 strokeWeight: 3,
-                path: lat_lon
+                path: lat_lng
             };
             // 直前で作成したPolylineOptionsを利用してPolylineを作成
             var polyline = new google.maps.Polyline(polylineOpts);
+        }
+
+        function calcDistance(lat1, lng1, lat2, lng2) {
+            const Re = 6378.137 // 地球の半径
+
+            function radians(deg) {
+                return deg * Math.PI / 180
+            }
+
+            function rectangularCoordinateSystem(lat, lng) {
+                const h = radians(lat)
+                const t = radians(lng)
+                const x = Math.cos(h) * Math.cos(t)
+                const y = Math.cos(h) * Math.sin(t)
+                const z = Math.sin(h)
+                return [x, y, z]
+            }
+
+            function innerProduct(vector1, vector2) {
+                return vector1.reduce((carry, value, index) => {
+                    return carry + value * vector2[index]
+                }, 0)
+            }
+
+            const v1 = rectangularCoordinateSystem(lat1, lng1)
+            const v2 = rectangularCoordinateSystem(lat2, lng2)
+            return Re * Math.acos(innerProduct(v1, v2))
+        }
+
+        function getNearestStation(lat, lng) {
+            return stations.map((station) => {
+                station.distance = calcDistance(lat, lng, station.lat, station.lng)
+                return station
+            }).sort((station1, station2) =>
+                station1.distance - station2.distance
+            ).slice(0, 1)
         }
     </script>
 </body>
