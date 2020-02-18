@@ -389,9 +389,11 @@
                 );
         }
         // ローカル一覧作成
-        function getLocal(station_cd, station_name, lat, lon, line_cd, transferLines, transferStations) {
+        function getLocal(station_cd, station_name, lat, lng, line_cd, transferLines, transferStations) {
             // マップ描画
-            drowMap(lat, lon);
+            if (lat != "" && lng != "") {
+                drowMap(lat, lng);
+            }
             // モーダルフォーム初期化
             $("#modal_form").show();
             $("#modal_msg").hide();
@@ -486,7 +488,7 @@
         }
 
         function closeModalMsg() {
-            getLocal($("#hidActiveStationCd").val(), $("#hidStationName").val(), $("#hidLineCd").val(), $("#hidTransferLines").val(), $("#hidTransferStations").val());
+            getLocal($("#hidActiveStationCd").val(), $("#hidStationName").val(), "", "", $("#hidLineCd").val(), $("#hidTransferLines").val(), $("#hidTransferStations").val());
         }
 
         function getMyPlace() {
