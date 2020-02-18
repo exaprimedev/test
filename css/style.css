@@ -1935,6 +1935,9 @@ div#preloader {
   vertical-align: middle;
 }
 
+.table td:nth-child(1){
+  width: 250px;
+}
 /*----------------------------------------
   18. Blog page
 ----------------------------------------*/
